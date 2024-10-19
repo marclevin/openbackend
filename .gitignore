@@ -1,2 +1,4 @@
 openback/node_modules/*
 
+.env
+private.key

@@ -1,8 +1,13 @@
 // First, install express by running:
 // npm install express @interledger/open-payments
 
-// Import express
 import express, { json } from 'express';
+import bodyParser from 'body-parser';
+import dotenv from 'dotenv';
+
+// Load environment variables from .env file
+dotenv.config();
+
 const app = express();
 const port = 3001;
 
@@ -11,6 +16,7 @@ import itemsRouter from './routes/itemsRouter.js';
 
 // Import Open Payments client functions
 import {getAuthenticatedClient} from './openPaymentsClient.js';
+import { getWalletDetails } from './openPaymentsClient.js';
 
 // Middleware to parse JSON bodies from HTTP requests
 app.use(json());
@@ -19,9 +25,9 @@ app.use(json());
 app.use('/items', itemsRouter);
 
 // Endpoint to get wallet details
-app.get('/wallet-details/:walletAddress', async (req, res) => {
+app.get('/wallet-details', async (req, res) => {
   try {
-    const walletAddress = { id: req.params.walletAddress };
+    const walletAddress = { id: req.body.walletAddress };
     const response = await getWalletDetails(walletAddress);
     res.json(response);
   } catch (error) {
