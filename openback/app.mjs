@@ -2,7 +2,6 @@
 // npm install express @interledger/open-payments
 
 import express, { json } from 'express';
-import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 
 // Load environment variables from .env file
@@ -17,6 +16,10 @@ import itemsRouter from './routes/itemsRouter.js';
 // Import Open Payments client functions
 import {getAuthenticatedClient} from './openPaymentsClient.js';
 import { getWalletDetails } from './openPaymentsClient.js';
+import { create_incoming } from './openPaymentsClient.js';
+import { createQuote } from './openPaymentsClient.js';
+import { getOutgoingPaymentAuthorization } from './openPaymentsClient.js';
+import { createOutgoingPayment } from './openPaymentsClient.js';
 
 // Middleware to parse JSON bodies from HTTP requests
 app.use(json());
@@ -43,7 +46,9 @@ app.post('/create-incoming', async (req, res) => {
     const response = await create_incoming(client, value, walletAddressDetails, expiresAt);
     res.json(response);
   } catch (error) {
-    res.status(500).send('Error creating incoming payment');
+    // res.status(500).send('Error creating incoming payment');
+    // res.status(500).send(error.message);
+    throw error;
   }
 });
 
@@ -52,7 +57,7 @@ app.post('/create-quote', async (req, res) => {
   try {
     const { incomingPaymentUrl, walletAddressDetails } = req.body;
     const client = await getAuthenticatedClient();
-    const response = await createQoute(client, incomingPaymentUrl, walletAddressDetails);
+    const response = await createQuote(client, incomingPaymentUrl, walletAddressDetails);
     res.json(response);
   } catch (error) {
     res.status(500).send('Error creating quote');
