@@ -8,7 +8,7 @@ import { randomUUID } from 'crypto';
   export async function getAuthenticatedClient() {
     try {
       const walletAddressUrl = process.env.OPEN_PAYMENTS_CLIENT_ADDRESS;
-      const privateKey = process.env.OPEN_PAYMENTS_SECRET_KEY_PATH;
+      const privateKey = process.env.OPEN_PAYMENTS_KEY_64;
       const keyId = process.env.OPEN_PAYMENTS_KEY_ID;
   
       if (!walletAddressUrl || !privateKey || !keyId) {
@@ -16,9 +16,10 @@ import { randomUUID } from 'crypto';
       }
   
       const client = await createAuthenticatedClient({
-        walletAddressUrl,
-        privateKey,
-        keyId,
+        walletAddressUrl: walletAddressUrl,
+        privateKey: Buffer.from(privateKey,'base64'),
+        keyId: keyId,
+        useHttp: true,
       });
   
       return client;
@@ -47,16 +48,7 @@ import { randomUUID } from 'crypto';
       return { success: false, message: 'Failed to get wallet details' };
     }
   }
-  
-  /**
-   * Creates an incoming payment
-   * 
-   * @param client The client of the system
-   * @param value The value of the incoming payment
-   * @param walletAddressDetails Details of the receiver.
-   * @param expiresAt The expiration time of the payment
-   * @returns IncomingPayment
-   */
+
   export async function create_incoming(client, value, walletAddressDetails, expiresAt) {
     const grant = await client.grant.request(
       {
