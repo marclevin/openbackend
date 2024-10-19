@@ -58,6 +58,8 @@ import { randomUUID } from 'crypto';
    * @returns IncomingPayment
    */
   export async function create_incoming(client, value, walletAddressDetails, expiresAt) {
+
+    console.log('authServer:', walletAddressDetails.authServer);
     const grant = await client.grant.request(
       {
         url: walletAddressDetails.authServer,
@@ -106,7 +108,7 @@ import { randomUUID } from 'crypto';
    * @param walletAddressDetails - Details of the receiver
    * @returns Quote
    */
-  export async function createQoute(client, incomingPaymentUrl, walletAddressDetails) {
+  export async function createQuote(client, incomingPaymentUrl, walletAddressDetails) {
     // Request Quote grant
     const grant = await client.grant.request(
       {
@@ -162,6 +164,7 @@ import { randomUUID } from 'crypto';
   
       // Get wallet address details
       const walletAddressDetails = await client.walletAddress.get({ url: input.walletAddress });
+      console.log('auth server:', walletAddressDetails.authServer);
   
       // Request outgoing payment authorization grant
       const grant = await client.grant.request(
